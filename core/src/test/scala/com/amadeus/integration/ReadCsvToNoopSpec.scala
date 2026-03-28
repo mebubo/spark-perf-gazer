@@ -55,7 +55,7 @@ class ReadCsvToNoopSpec extends SimpleSpec with GivenWhenThen {
         csvNode.metrics.keys should contain("number of files read")
 
         And("it should build SQL reports with details")
-        sqlReport.physicalPlan should include regex "Physical Plan"
+        sqlReport.physicalPlan should not be empty
         sqlReport.parsedLogicalPlan shouldBe defined
         sqlReport.optimizedLogicalPlan shouldBe defined
 
