@@ -142,7 +142,7 @@ class PerfGazer(
         SqlEvent(
           id = event.executionId,
           description = event.description,
-          details = event.physicalPlanDescription,
+          physicalPlan = event.physicalPlanDescription,
           planInfo = event.sparkPlanInfo
         )
       )
@@ -164,7 +164,7 @@ class PerfGazer(
             .map(_.executionMetrics(event.executionId))
             .getOrElse(Map.empty)
           val enrichedStart = SparkInternal.extendedDetails(event)
-            .fold(sqlStart)(details => sqlStart.copy(details = details))
+            .fold(sqlStart)(SqlEvent.withExtendedDetails(sqlStart, _))
           sink.write(SqlReport(enrichedStart, metricsById))
           sqlStartEvents.remove(event.executionId)
         case None =>
@@ -181,7 +181,7 @@ class PerfGazer(
           sqlStartEvents.put(
             event.executionId,
             sqlStart.copy(
-              details = event.physicalPlanDescription,
+              physicalPlan = event.physicalPlanDescription,
               planInfo = event.sparkPlanInfo
             )
           )

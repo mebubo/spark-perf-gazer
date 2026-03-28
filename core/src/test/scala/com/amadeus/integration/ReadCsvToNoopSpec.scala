@@ -55,10 +55,9 @@ class ReadCsvToNoopSpec extends SimpleSpec with GivenWhenThen {
         csvNode.metrics.keys should contain("number of files read")
 
         And("it should build SQL reports with details")
-        val sqlDetails = sqlReport.details
-        sqlDetails should include regex "== Parsed Logical Plan =="
-        sqlDetails should include regex "== Optimized Logical Plan =="
-        sqlDetails should include regex "== Physical Plan =="
+        sqlReport.physicalPlan should include regex "Physical Plan"
+        sqlReport.parsedLogicalPlan shouldBe defined
+        sqlReport.optimizedLogicalPlan shouldBe defined
 
         And("it should build job reports")
         val jobReports = sinks.reports.collect { case r: JobReport => r }

@@ -7,7 +7,10 @@ import org.apache.spark.sql.execution.metric.SQLMetricInfo
 case class SqlReport(
   sqlId: Long,
   description: String,
-  details: String,
+  physicalPlan: String,
+  parsedLogicalPlan: Option[String],
+  analyzedLogicalPlan: Option[String],
+  optimizedLogicalPlan: Option[String],
   nodes: Seq[SqlNode]
 ) extends Report {
   override def reportType: ReportType = SqlReportType
@@ -23,10 +26,13 @@ object SqlReport {
     */
   def apply(start: SqlEvent, metricsById: Map[Long, String]): SqlReport =
     SqlReport(
-      sqlId = start.id,
-      description = start.description,
-      details = start.details,
-      nodes = asNodes(start, metricsById)
+      sqlId                = start.id,
+      description          = start.description,
+      physicalPlan         = start.physicalPlan,
+      parsedLogicalPlan    = start.parsedLogicalPlan,
+      analyzedLogicalPlan  = start.analyzedLogicalPlan,
+      optimizedLogicalPlan = start.optimizedLogicalPlan,
+      nodes                = asNodes(start, metricsById)
     )
 
   private def buildNodes(
