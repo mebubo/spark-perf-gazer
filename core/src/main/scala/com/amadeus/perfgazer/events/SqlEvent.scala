@@ -35,7 +35,7 @@ object SqlEvent {
     val matches = header.findAllMatchIn(extended).toList
     matches.zipWithIndex.map { case (m, i) =>
       val name  = m.group(1)
-      val start = m.end
+      val start = m.start
       val end   = if (i + 1 < matches.length) matches(i + 1).start else extended.length
       name -> extended.substring(start, end).trim
     }.toMap
