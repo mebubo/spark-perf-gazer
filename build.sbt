@@ -85,15 +85,18 @@ def testGroups(tests: Seq[TestDefinition], baseDir: File): Seq[Group] = {
 }
 
 val commonSettings = Seq(
-  Compile / javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
   scalacOptions ++= Seq(
-    "-Ypartial-unification",
     "-deprecation",
     "-feature",
     "-encoding",
-    "UTF-8",
-    "-target:jvm-1.8"
+    "UTF-8"
   ),
+  scalacOptions ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, 12)) => Seq("-Ypartial-unification", "-target:jvm-1.8")
+      case _             => Seq.empty
+    }
+  },
   libraryDependencies ++= Dependencies.coreDeps(SparkVersion)
 )
 
