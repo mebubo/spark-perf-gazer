@@ -4,26 +4,23 @@ on:
     tags: ["v*"]
 
 jobs:
+  load-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v6
+      - id: set-matrix
+        run: echo "matrix={\"include\":$(cat .github/matrix.json)}" >> "$GITHUB_OUTPUT"
+
   publish:
+    needs: load-matrix
     runs-on: ubuntu-latest
     name: Release (Spark ${{ matrix.spark }})
     strategy:
       fail-fast: true
       max-parallel: 1
-      matrix:
-        include:
-          - spark: "3.4.1"
-            scala: "2.12.21"
-            java: "8"
-          - spark: "3.5.2"
-            scala: "2.12.21"
-            java: "8"
-          - spark: "3.5.2"
-            scala: "2.13.18"
-            java: "8"
-          - spark: "4.1.1"
-            scala: "2.13.18"
-            java: "17"
+      matrix: ${{ fromJson(needs.load-matrix.outputs.matrix) }}
     env:
       SPARK_VERSION: ${{ matrix.spark }}
       SCALA_VERSION: ${{ matrix.scala }}
